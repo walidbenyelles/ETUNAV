@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    /* Dashboard Container */
+    .dashboard-container {
+        padding: 3rem 5%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 3rem;
+        margin-bottom: 3rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    .welcome-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--gradient-primary);
+    }
+
+    .welcome-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .welcome-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* User Info Grid */
+    .user-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .info-item {
+        background: rgba(79, 70, 229, 0.05);
+        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(79, 70, 229, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        background: rgba(79, 70, 229, 0.08);
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: var(--text-main);
+        font-weight: 700;
+    }
+
+    /* Quick Actions */
+    .quick-actions-section {
+        margin-top: 3rem;
+    }
+
+    .section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        color: var(--text-main);
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .action-card {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        text-decoration: none;
+        display: block;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-primary);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .action-card:hover::before {
+        opacity: 0.05;
+    }
+
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .action-card:hover .action-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .action-card h3 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+        position: relative;
+        z-index: 1;
+    }
+
+    .action-card p {
+        color: var(--text-muted);
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Logout Button */
+    .logout-section {
+        margin-top: 3rem;
+        text-align: center;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .welcome-section {
+            padding: 2rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+        }
+
+        .user-info-grid,
+        .actions-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <h1 class="welcome-title">Bonjour, {{ user.prenom }} ! 👋</h1>
+        <p class="welcome-subtitle">Bienvenue sur votre espace personnel Etunav</p>
+
+        <div class="user-info-grid">
+            <div class="info-item">
+                <div class="info-label">Nom complet</div>
+                <div class="info-value">{{ user.prenom }} {{ user.nom }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value">{{ user.email }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Nationalité</div>
+                <div class="info-value">{{ user.nationalite }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Membre depuis</div>
+                <div class="info-value">{{ user.created_at.strftime('%d/%m/%Y') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-section">
+        <h2 class="section-title">Accès rapide</h2>
+
+        <div class="actions-grid">
+            <a href="#" class="action-card">
+                <div class="action-icon">
+                    <i data-lucide="file-text" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Administratif</h3>
+                <p>Accédez à vos guides pour toutes vos démarches administratives</p>
+            </a>
+
+            <a href="#" class="action-card">
+                <div class="action-icon">
+                    <i data-lucide="wallet" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Budget & Finances</h3>
+                <p>Gérez vos finances et optimisez votre budget étudiant</p>
+            </a>
+
+            <a href="#" class="action-card">
+                <div class="action-icon">
+                    <i data-lucide="home" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Logement</h3>
+                <p>Trouvez et gérez votre logement en toute simplicité</p>
+            </a>
+
+            <a href="#" class="action-card">
+                <div class="action-icon">
+                    <i data-lucide="user-circle" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Mon Profil</h3>
+                <p>Modifiez vos informations personnelles et préférences</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Logout -->
+    <div class="logout-section">
+        <a href="{{ url_for('logout') }}" class="btn btn-secondary">
+            <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+            Se déconnecter
+        </a>
+    </div>
+</div>
+
+<script>
+    // Initialiser les icônes
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    .admin-container {
+        padding: 3rem 5%;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .admin-header {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .admin-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .header-left h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-left p {
+        color: var(--text-muted);
+    }
+
+    .table-section {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: rgba(79, 70, 229, 0.05);
+    }
+
+    th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 700;
+        color: var(--text-main);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+    }
+
+    td {
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        color: var(--text-main);
+    }
+
+    tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    tbody tr:hover {
+        background: rgba(79, 70, 229, 0.03);
+    }
+
+    .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border: none;
+    }
+
+    .btn-view {
+        background: rgba(79, 70, 229, 0.1);
+        color: var(--primary);
+        border: 1px solid rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-view:hover {
+        background: rgba(79, 70, 229, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .btn-validate {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(67, 233, 123, 0.3);
+    }
+
+    .btn-validate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 233, 123, 0.4);
+    }
+
+    .btn-reject {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-reject:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state i {
+        width: 80px;
+        height: 80px;
+        color: var(--text-muted);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--text-light);
+    }
+
+    .date-badge {
+        display: inline-block;
+        background: rgba(79, 70, 229, 0.1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    /* Lightbox */
+    .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 2000;
+        padding: 2rem;
+        overflow: auto;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lightbox.active {
+        display: flex;
+    }
+
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: white;
+        color: black;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s ease;
+    }
+
+    .lightbox-close:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <div class="header-left">
+            <h1>Demandes en Attente</h1>
+            <p>{{ users|length }} demande(s) à traiter</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+            <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+            Retour Dashboard
+        </a>
+    </div>
+
+    <div class="table-section">
+        {% if users %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Nationalité</th>
+                    <th>Date</th>
+                    <th>Justificatif</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><strong>{{ user.nom }}</strong></td>
+                    <td>{{ user.prenom }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.nationalite }}</td>
+                    <td>
+                        <span class="date-badge">
+                            {{ user.created_at.strftime('%d/%m/%Y') }}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn-small btn-view"
+                            onclick="openLightbox('{{ url_for('uploaded_file', filename=user.document_path) }}')">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Voir
+                        </button>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{{ url_for('admin_validate', user_id=user.id) }}" class="btn-small btn-validate"
+                                onclick="return confirm('Valider l\'inscription de {{ user.prenom }} {{ user.nom }} ?')">
+                                <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                                Valider
+                            </a>
+                            <a href="{{ url_for('admin_reject', user_id=user.id) }}" class="btn-small btn-reject"
+                                onclick="return confirm('Rejeter définitivement l\'inscription de {{ user.prenom }} {{ user.nom }} ?')">
+                                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                                Rejeter
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i data-lucide="inbox" style="width: 80px; height: 80px;"></i>
+            <h3>Aucune demande en attente</h3>
+            <p>Toutes les inscriptions ont été traitées !</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img class="lightbox-content" id="lightboxImage" src="" alt="Document">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+    });
+
+    function openLightbox(imageSrc) {
+        const lightbox = document.getElementById('lightbox');
+        const img = document.getElementById('lightboxImage');
+        img.src = imageSrc;
+        lightbox.classList.add('active');
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.classList.remove('active');
+    }
+</script>
+{% endblock %}

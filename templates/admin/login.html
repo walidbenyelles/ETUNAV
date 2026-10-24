@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 5%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-card {
+        max-width: 450px;
+        width: 100%;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2.5rem;
+        box-shadow: var(--shadow-xl);
+        animation: fadeInUp 0.6s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .admin-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .auth-header h2 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .auth-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background: white;
+        border: 2px solid rgba(148, 163, 184, 0.2);
+        border-radius: var(--radius-sm);
+        color: var(--text-main);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #f5576c;
+        box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .btn-submit {
+        width: 100%;
+        margin-top: 1.5rem;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .auth-footer a {
+        color: #f5576c;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div style="text-align: center;">
+            <span class="admin-badge">
+                <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+                Administrateur
+            </span>
+        </div>
+
+        <div class="auth-header">
+            <h2>Espace Admin</h2>
+            <p>Accès réservé aux administrateurs</p>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="username" class="form-label">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" class="form-input" required placeholder="admin"
+                    autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">
+                <i data-lucide="shield" style="width: 20px; height: 20px;"></i>
+                Se connecter
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <a href="{{ url_for('home') }}">← Retour à l'accueil</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

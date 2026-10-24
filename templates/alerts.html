@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centre d'alertes - ETUNAV</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --primary: #4f46e5;
+            --primary-soft: #eef2ff;
+            --danger: #dc2626;
+            --danger-soft: #fee2e2;
+            --warn: #d97706;
+            --warn-soft: #fef3c7;
+            --ok: #15803d;
+            --ok-soft: #dcfce7;
+            --shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 28px 18px 50px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 1.9rem;
+            color: var(--primary);
+        }
+
+        .brand p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            text-decoration: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); }
+
+        .hero {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+
+        .hero-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .hero h2 { margin: 0 0 10px; font-size: 1.55rem; }
+        .hero p { margin: 0; color: var(--muted); line-height: 1.6; max-width: 780px; }
+
+        .chips {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            border-radius: 999px;
+            padding: 8px 12px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin: 20px 0 26px;
+        }
+
+        .summary-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-card .label {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .summary-card .small {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .section {
+            margin-top: 22px;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .section-head h3 {
+            margin: 0;
+            font-size: 1.35rem;
+        }
+
+        .section-head p {
+            margin: 6px 0 0;
+            color: var(--muted);
+        }
+
+        .alerts-grid, .manual-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .alert-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .alert-card.critical { border-color: #fecaca; }
+        .alert-card.important { border-color: #fde68a; }
+        .alert-card.standard { border-color: #c7f9cc; }
+
+        .alert-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 18px 18px 0;
+        }
+
+        .alert-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: #f3f4f6;
+            flex-shrink: 0;
+        }
+
+        .alert-body { padding: 14px 18px 18px; }
+        .alert-body h4 { margin: 0 0 8px; font-size: 1.08rem; }
+        .alert-body p { margin: 0; color: var(--muted); line-height: 1.55; }
+
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 14px 0 12px;
+        }
+
+        .pill {
+            border-radius: 999px;
+            padding: 7px 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .pill.critical { background: var(--danger-soft); color: var(--danger); }
+        .pill.important { background: var(--warn-soft); color: var(--warn); }
+        .pill.standard { background: var(--ok-soft); color: var(--ok); }
+        .pill.profile { background: #f3f4f6; color: #475569; }
+
+        .countdown {
+            margin: 14px 0 8px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .countdown.critical { background: #fff1f2; color: #9f1239; }
+        .countdown.important { background: #fff7ed; color: #9a3412; }
+        .countdown.standard { background: #f0fdf4; color: #166534; }
+
+        .subline {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 14px;
+        }
+
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .text-link {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mini-btn {
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .form-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            border-radius: 22px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full { grid-column: 1 / -1; }
+
+        label {
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font: inherit;
+            background: #fff;
+        }
+
+        textarea { min-height: 110px; resize: vertical; }
+
+        .hint {
+            color: var(--muted);
+            font-size: 0.84rem;
+        }
+
+        .empty {
+            background: var(--card);
+            border: 1px dashed #cbd5e1;
+            border-radius: 18px;
+            padding: 22px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .inline-note {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 980px) {
+            .summary, .alerts-grid, .manual-grid, .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="topbar">
+        <div class="brand">
+            <h1>ETUNAV</h1>
+            <p>Centre d'alertes pour suivre vos documents sensibles et anticiper les démarches importantes.</p>
+        </div>
+        <div class="top-actions">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary"><i class="ri-arrow-left-line"></i> Retour au dashboard</a>
+            <a href="#manual-form" class="btn btn-primary"><i class="ri-add-line"></i> Surveiller un document</a>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-top">
+            <div>
+                <h2>Vos alertes administratives en un seul endroit</h2>
+                <p>
+                    Cette page met en avant les échéances administratives qui méritent une attention particulière.
+                    Elle affiche des alertes utiles selon votre profil et vous permet aussi d'ajouter manuellement
+                    les documents que vous voulez garder sous surveillance.
+                </p>
+                <div class="chips">
+                    <span class="chip">{{ user.full_name }}</span>
+                    <span class="chip">Nationalité : {{ user.nationalite or 'Non renseignée' }}</span>
+                    <span class="chip">Situation : {{ user.situation or 'À compléter' }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="summary" id="summary-cards"></section>
+
+    <section class="section">
+        <div class="section-head">
+            <div>
+                <h3>Alertes suggérées</h3>
+                <p>Exemples concrets d'alertes utiles à afficher automatiquement selon la situation de l'étudiant.</p>
+            </div>
+        </div>
+        <div class="alerts-grid" id="suggested-alerts"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-head">
+            <div>
+                <h3>Ajouter un dossier à suivre</h3>
+                <p>Choisissez un document, ses dates et les informations utiles pour le garder sous surveillance.</p>
+            </div>
+        </div>
+        <div class="form-card" id="manual-form">
+            <form id="watch-form">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="doc-type">Document à surveiller</label>
+                        <select id="doc-type" required>
+                            <option value="">Choisir un document</option>
+                            <option value="Titre de séjour">Titre de séjour</option>
+                            <option value="Visa / VLS-TS">Visa / VLS-TS</option>
+                            <option value="Passeport">Passeport</option>
+                            <option value="Récépissé">Récépissé</option>
+                            <option value="Attestation d'inscription">Attestation d'inscription</option>
+                            <option value="Assurance habitation">Assurance habitation</option>
+                            <option value="Mutuelle / sécurité sociale">Mutuelle / sécurité sociale</option>
+                            <option value="Autre justificatif administratif">Autre justificatif administratif</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="surveillance-level">Niveau de surveillance</label>
+                        <select id="surveillance-level" required>
+                            <option value="">Choisir un niveau</option>
+                            <option value="élevé">Élevé</option>
+                            <option value="moyen">Moyen</option>
+                            <option value="standard">Standard</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="start-date">Date de début</label>
+                        <input type="date" id="start-date" required>
+                    </div>
+                    <div class="field">
+                        <label for="end-date">Date de fin / expiration</label>
+                        <input type="date" id="end-date" required>
+                    </div>
+                    <div class="field full">
+                        <label for="procedure-link">Lien utile vers la procédure</label>
+                        <input type="url" id="procedure-link" placeholder="https://...">
+                    </div>
+                    <div class="field full">
+                        <label for="doc-note">Note personnelle</label>
+                        <textarea id="doc-note" placeholder="Ex : document déposé à la préfecture, rendez-vous prévu, pièce à récupérer..."></textarea>
+                        <div class="hint">Conseil : indiquez ce qu'il faudra faire avant expiration ou le prochain point de contrôle utile.</div>
+                    </div>
+                </div>
+                <div class="card-actions" style="margin-top:18px;">
+                    <button type="submit" class="btn btn-primary"><i class="ri-radar-line"></i> Ajouter à mes suivis</button>
+                </div>
+                <div class="inline-note">Le niveau de surveillance représente l'importance générale du document. L'urgence affichée est recalculée automatiquement selon le nombre de jours restants.</div>
+            </form>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-head">
+            <div>
+                <h3>Dossiers suivis manuellement</h3>
+                <p>Les documents que vous ajoutez ici sont affichés avec leur échéance, leur urgence actuelle et le prochain réflexe à avoir.</p>
+            </div>
+        </div>
+        <div class="manual-grid" id="manual-alerts"></div>
+        <div class="empty" id="manual-empty">Aucun dossier manuel pour l'instant. Ajoutez un document à surveiller pour le voir apparaître ici.</div>
+    </section>
+</div>
+
+<script>
+    const USER_CONTEXT = {
+        nationalite: {{ (user.nationalite or '')|tojson }},
+        situation: {{ (user.situation or '')|tojson }},
+        fullName: {{ (user.full_name or '')|tojson }},
+        email: {{ (user.email or '')|tojson }}
+    };
+
+    const STORAGE_KEY = 'etunav_manual_watch_docs_v2_' + USER_CONTEXT.email;
+
+    function formatFrenchDate(dateInput) {
+        const date = new Date(dateInput);
+        if (Number.isNaN(date.getTime())) return 'Date invalide';
+        return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function daysLeft(endDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const end = new Date(endDate);
+        end.setHours(0, 0, 0, 0);
+        const diffTime = end.getTime() - today.getTime();
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function getUrgencyFromDays(days) {
+        if (days < 0) {
+            return {
+                level: 'Critique',
+                className: 'critical',
+                label: `Expiré depuis ${Math.abs(days)} jour${Math.abs(days) > 1 ? 's' : ''}`,
+                helper: 'Le document semble expiré : il faut vérifier la régularisation sans attendre.'
+            };
+        }
+        if (days <= 7) {
+            return {
+                level: 'Critique',
+                className: 'critical',
+                label: `Expire dans ${days} jour${days > 1 ? 's' : ''}`,
+                helper: 'Action immédiate recommandée pour éviter une rupture administrative.'
+            };
+        }
+        if (days <= 30) {
+            return {
+                level: 'Important',
+                className: 'important',
+                label: `Expire dans ${days} jours`,
+                helper: 'À traiter bientôt : il est temps de préparer les justificatifs et rendez-vous.'
+            };
+        }
+        return {
+            level: 'Standard',
+            className: 'standard',
+            label: `Expire dans ${days} jours`,
+            helper: 'Suivi normal : gardez ce document dans votre radar administratif.'
+        };
+    }
+
+    function getSurveillanceHelper(level) {
+        if (level === 'élevé') return 'Suivi renforcé : document sensible à vérifier fréquemment.';
+        if (level === 'moyen') return 'Suivi régulier : une vérification mensuelle est conseillée.';
+        return 'Suivi standard : rappel visuel utile sans besoin de contrôle très rapproché.';
+    }
+
+    function getSuggestedAlerts() {
+        const today = new Date();
+        const plusDays = (n) => {
+            const d = new Date(today);
+            d.setDate(d.getDate() + n);
+            return d.toISOString().slice(0, 10);
+        };
+
+        const alerts = [];
+
+        if (USER_CONTEXT.nationalite && USER_CONTEXT.nationalite !== 'fr' && USER_CONTEXT.situation === 'algerie') {
+            alerts.push({
+                type: 'Visa étudiant avant départ',
+                icon: '🛂',
+                audience: 'Préparation avant départ',
+                endDate: plusDays(21),
+                procedureLabel: 'Voir les étapes du visa',
+                procedureLink: '#',
+                description: 'Pensez à préparer la date de dépôt, la récupération du passeport et les délais de départ avant votre arrivée en France.',
+                note: 'Pensez aussi à vérifier si un rendez-vous ou une preuve financière manque encore.'
+            });
+        }
+
+        if (USER_CONTEXT.nationalite && USER_CONTEXT.nationalite !== 'fr' && USER_CONTEXT.situation === 'france') {
+            alerts.push(
+                {
+                    type: 'Visa ou VLS-TS à surveiller',
+                    icon: '📄',
+                    audience: 'Étudiant étranger en France',
+                    endDate: plusDays(28),
+                    procedureLabel: 'Préparer le dossier',
+                    procedureLink: '#',
+                    description: 'Affichez une alerte dédiée pour savoir quand lancer la validation, le renouvellement ou la demande liée au visa.',
+                    note: 'Utile si vous avez encore des démarches OFII, ANEF ou des justificatifs à réunir.'
+                },
+                {
+                    type: 'Titre de séjour bientôt expiré',
+                    icon: '🪪',
+                    audience: 'Étudiant étranger en France',
+                    endDate: plusDays(12),
+                    procedureLabel: 'Lien vers la procédure',
+                    procedureLink: '#',
+                    description: 'Votre titre de séjour approche de son échéance. Anticipez le renouvellement suffisamment tôt pour éviter une rupture de droit.',
+                    note: 'Pensez au justificatif d’hébergement, aux ressources et au certificat de scolarité.'
+                }
+            );
+        }
+
+        alerts.push(
+            {
+                type: 'Passeport à vérifier avant toute démarche',
+                icon: '🛃',
+                audience: 'Tous profils',
+                endDate: plusDays(63),
+                procedureLabel: 'Voir les justificatifs à prévoir',
+                procedureLink: '#',
+                description: 'Assurez-vous que votre passeport reste valide assez longtemps pour soutenir vos renouvellements et demandes administratives.',
+                note: 'Un passeport trop proche de l’expiration peut bloquer plusieurs démarches.'
+            },
+            {
+                type: 'Conserver les preuves administratives importantes',
+                icon: '📁',
+                audience: 'Tous profils',
+                endDate: plusDays(45),
+                procedureLabel: 'Ajouter un dossier à surveiller',
+                procedureLink: '#manual-form',
+                description: 'Gardez sous contrôle récépissé, attestation ou justificatif utile si vous voulez être rappelé avant expiration ou avant un dépôt.',
+                note: 'Ce type d’alerte aide surtout à ne pas oublier les pièces déjà obtenues.'
+            }
+        );
+
+        return alerts;
+    }
+
+    function createSuggestedAlertCard(alert) {
+        const days = daysLeft(alert.endDate);
+        const urgency = getUrgencyFromDays(days);
+        return `
+            <article class="alert-card ${urgency.className}">
+                <div class="alert-card-top">
+                    <div class="alert-icon">${alert.icon}</div>
+                    <span class="pill ${urgency.className}">${urgency.level}</span>
+                </div>
+                <div class="alert-body">
+                    <h4>${alert.type}</h4>
+                    <p>${alert.description}</p>
+                    <div class="meta-row">
+                        <span class="pill profile">${alert.audience}</span>
+                    </div>
+                    <div class="countdown ${urgency.className}">
+                        <span>${urgency.label}</span>
+                        <span>Échéance : ${formatFrenchDate(alert.endDate)}</span>
+                    </div>
+                    <div class="subline">${urgency.helper}</div>
+                    <div class="subline">${alert.note}</div>
+                    <div class="card-actions">
+                        <a href="${alert.procedureLink}" class="text-link"><i class="ri-links-line"></i> ${alert.procedureLabel}</a>
+                        <button type="button" class="mini-btn" data-track-type="${alert.type}">Surveiller ce dossier</button>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    function loadManualDocs() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveManualDocs(docs) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+    }
+
+    function createManualCard(doc, index) {
+        const days = daysLeft(doc.endDate);
+        const urgency = getUrgencyFromDays(days);
+        return `
+            <article class="alert-card ${urgency.className}">
+                <div class="alert-card-top">
+                    <div class="alert-icon">📌</div>
+                    <span class="pill ${urgency.className}">${urgency.level}</span>
+                </div>
+                <div class="alert-body">
+                    <h4>${doc.type}</h4>
+                    <p>${doc.note || 'Aucune note ajoutée pour ce dossier.'}</p>
+                    <div class="meta-row">
+                        <span class="pill profile">Surveillance ${doc.surveillanceLevel}</span>
+                        <span class="pill profile">Début : ${formatFrenchDate(doc.startDate)}</span>
+                    </div>
+                    <div class="countdown ${urgency.className}">
+                        <span>${urgency.label}</span>
+                        <span>Fin : ${formatFrenchDate(doc.endDate)}</span>
+                    </div>
+                    <div class="subline">${urgency.helper}</div>
+                    <div class="subline">${getSurveillanceHelper(doc.surveillanceLevel)}</div>
+                    <div class="card-actions">
+                        ${doc.procedureLink ? `<a href="${doc.procedureLink}" target="_blank" rel="noopener noreferrer" class="text-link"><i class="ri-external-link-line"></i> Ouvrir la procédure</a>` : ''}
+                        <button type="button" class="mini-btn" data-remove-manual="${index}">Retirer ce suivi</button>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    function renderSuggestedAlerts() {
+        const container = document.getElementById('suggested-alerts');
+        const alerts = getSuggestedAlerts();
+        container.innerHTML = alerts.map(createSuggestedAlertCard).join('');
+    }
+
+    function renderManualDocs() {
+        const container = document.getElementById('manual-alerts');
+        const empty = document.getElementById('manual-empty');
+        const docs = loadManualDocs();
+        if (!docs.length) {
+            container.innerHTML = '';
+            empty.style.display = 'block';
+        } else {
+            container.innerHTML = docs.map(createManualCard).join('');
+            empty.style.display = 'none';
+        }
+        renderSummary();
+    }
+
+    function renderSummary() {
+        const suggested = getSuggestedAlerts();
+        const manual = loadManualDocs();
+        const all = [
+            ...suggested.map(a => ({ endDate: a.endDate })),
+            ...manual.map(a => ({ endDate: a.endDate }))
+        ];
+
+        let critical = 0;
+        let important = 0;
+        let standard = 0;
+
+        all.forEach(item => {
+            const urgency = getUrgencyFromDays(daysLeft(item.endDate));
+            if (urgency.className === 'critical') critical += 1;
+            else if (urgency.className === 'important') important += 1;
+            else standard += 1;
+        });
+
+        const summary = document.getElementById('summary-cards');
+        summary.innerHTML = `
+            <div class="summary-card">
+                <div class="label">Alertes critiques</div>
+                <div class="value">${critical}</div>
+                <div class="small">Documents à gérer très vite ou déjà expirés</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Alertes importantes</div>
+                <div class="value">${important}</div>
+                <div class="small">Échéances proches à préparer dès maintenant</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Suivis standards</div>
+                <div class="value">${standard}</div>
+                <div class="small">Contrôles utiles sans urgence immédiate</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Dossiers suivis manuellement</div>
+                <div class="value">${manual.length}</div>
+                <div class="small">Ajouts faits par l'étudiant pour compléter ses alertes</div>
+            </div>
+        `;
+    }
+
+    function prefillManualForm(type) {
+        document.getElementById('doc-type').value = type;
+        document.getElementById('manual-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.addEventListener('click', (event) => {
+        const trackType = event.target.getAttribute('data-track-type');
+        if (trackType) {
+            prefillManualForm(trackType);
+        }
+
+        const removeIndex = event.target.getAttribute('data-remove-manual');
+        if (removeIndex !== null) {
+            const docs = loadManualDocs();
+            docs.splice(Number(removeIndex), 1);
+            saveManualDocs(docs);
+            renderManualDocs();
+        }
+    });
+
+    document.getElementById('watch-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const type = document.getElementById('doc-type').value;
+        const surveillanceLevel = document.getElementById('surveillance-level').value;
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const procedureLink = document.getElementById('procedure-link').value.trim();
+        const note = document.getElementById('doc-note').value.trim();
+
+        if (!type || !surveillanceLevel || !startDate || !endDate) {
+            alert('Veuillez remplir les champs obligatoires.');
+            return;
+        }
+
+        if (new Date(endDate) < new Date(startDate)) {
+            alert('La date de fin doit être postérieure à la date de début.');
+            return;
+        }
+
+        const docs = loadManualDocs();
+        docs.unshift({ type, surveillanceLevel, startDate, endDate, procedureLink, note });
+        saveManualDocs(docs);
+
+        // Envoyer au backend pour que le module d'alertes par email fonctionne
+        const formData = new FormData();
+        formData.append('doc_name', type);
+        formData.append('expiry_date', endDate);
+        
+        fetch('/alerts/add', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            console.log('Document synchronisé avec le serveur pour les e-mails');
+        }).catch(err => {
+            console.error(err);
+        });
+
+
+        event.target.reset();
+        renderManualDocs();
+    });
+
+    renderSuggestedAlerts();
+    renderManualDocs();
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    /* Auth Page Container */
+    .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 5%;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Auth Card */
+    .auth-card {
+        max-width: 480px;
+        width: 100%;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2.5rem;
+        box-shadow: var(--shadow-xl);
+        animation: fadeInUp 0.6s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--gradient-primary);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Auth Header */
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .auth-header h2 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .auth-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background: white;
+        border: 2px solid rgba(148, 163, 184, 0.2);
+        border-radius: var(--radius-sm);
+        color: var(--text-main);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .form-input::placeholder {
+        color: var(--text-light);
+    }
+
+    /* Auth Footer */
+    .auth-footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .auth-footer p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .auth-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .auth-footer a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+        width: 100%;
+        margin-top: 1.5rem;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    /* Forgot Password Link */
+    .forgot-password {
+        text-align: right;
+        margin-top: 0.5rem;
+    }
+
+    .forgot-password a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .forgot-password a:hover {
+        color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .auth-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .auth-header h2 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>Connexion</h2>
+            <p>Accédez à votre espace Etunav</p>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-input" required
+                    placeholder="votre.email@exemple.com" autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" id="password" name="password" class="form-input" required
+                    placeholder="Votre mot de passe">
+                <div class="forgot-password">
+                    <a href="#">Mot de passe oublié ?</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">
+                <i data-lucide="log-in" style="width: 20px; height: 20px;"></i>
+                Se connecter
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Pas encore de compte ? <a href="{{ url_for('register') }}">Inscrivez-vous</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialiser les icônes après le chargement
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    .admin-container {
+        padding: 3rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .admin-header {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filter-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        align-items: center;
+    }
+
+    .filter-bar select {
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        outline: none;
+    }
+
+    .msg-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-left: 4px solid #667eea;
+    }
+
+    .msg-header {
+        font-size: 0.9em;
+        color: #64748b;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .msg-content {
+        font-size: 1.1em;
+        color: #1e293b;
+    }
+
+    .msg-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.85em;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-danger {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+
+    .btn-danger:hover {
+        background: #fecaca;
+    }
+
+    .btn-warning {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .btn-warning:hover {
+        background: #fde68a;
+    }
+
+    .banned-badge {
+        background: #ef4444;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        font-weight: 700;
+    }
+</style>
+<script>
+    async function deleteMessage(msgId, btn) {
+        if (!confirm("Supprimer ce message ?")) return;
+
+        const res = await fetch(`/admin/chat/delete/${msgId}`, { method: 'POST' });
+        if (res.ok) {
+            btn.closest('.msg-card').remove();
+        } else {
+            alert('Erreur lors de la suppression');
+        }
+    }
+
+    async function toggleBanUser(userId, btn) {
+        const isBanning = btn.textContent.includes('Bannir');
+        if (!confirm(isBanning ? "Bannir cet utilisateur ?" : "Débannir cet utilisateur ?")) return;
+
+        const res = await fetch(`/admin/user/ban/${userId}`, { method: 'POST' });
+        const data = await res.json();
+
+        if (res.ok) {
+            if (data.is_banned) {
+                btn.innerHTML = '<i class="ri-user-unfollow-line"></i> Débannir';
+                btn.classList.add('banned-state');
+            } else {
+                btn.innerHTML = '<i class="ri-alert-line"></i> Bannir';
+                btn.classList.remove('banned-state');
+            }
+            window.location.reload(); // Recharger pour voir les badges
+        } else {
+            alert('Erreur lors du changement de statut');
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <a href="{{ url_for('admin_dashboard') }}"
+            style="color: #64748b; text-decoration: none; display:inline-block; margin-bottom:10px;"><i
+                class="ri-arrow-left-line"></i> Retour au Dashboard</a>
+        <h1 style="font-size: 2rem; color: #1e293b;">Modération Chat Communautaire</h1>
+        <p style="color: #64748b;">Surveillez les échanges et gérez les utilisateurs abusifs.</p>
+    </div>
+
+    <div class="filter-bar">
+        <form action="{{ url_for('admin_chat') }}" method="GET" style="display:flex; gap:10px;">
+            <select name="region">
+                <option value="">Toutes les régions</option>
+                {% for r in regions %}
+                <option value="{{ r }}" {% if selected_region==r %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Filtrer</button>
+        </form>
+    </div>
+
+    <div class="messages-list">
+        {% if not messages %}
+        <p style="color: #64748b; text-align: center; margin-top: 40px;">Aucun message à afficher.</p>
+        {% endif %}
+
+        {% for msg in messages %}
+        <div class="msg-card">
+            <div class="msg-info">
+                <div class="msg-header">
+                    <strong>{{ msg.user.prenom }} {{ msg.user.nom }}</strong>
+                    <span>({{ msg.user.email }})</span>
+                    <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 20px;">📍 {{ msg.region }}</span>
+                    <span>{{ msg.timestamp.strftime('%d/%m/%Y %H:%M') }}</span>
+                    {% if msg.user.is_banned %}
+                    <span class="banned-badge">BANNI</span>
+                    {% endif %}
+                </div>
+                <div class="msg-content">
+                    {{ msg.content }}
+                </div>
+            </div>
+            <div class="msg-actions">
+                <button onclick="deleteMessage({{ msg.id }}, this)" class="btn-sm btn-danger">
+                    <i class="ri-delete-bin-line"></i> Supprimer
+                </button>
+                <button onclick="toggleBanUser({{ msg.user_id }}, this)" class="btn-sm btn-warning">
+                    {% if msg.user.is_banned %}
+                    <i class="ri-user-unfollow-line"></i> Débannir
+                    {% else %}
+                    <i class="ri-alert-line"></i> Bannir
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

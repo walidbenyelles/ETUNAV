@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    /* Diagnostic Page - Ultra Modern Design */
+    .diagnostic-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 5%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animated background circles */
+    .diagnostic-wrapper::before,
+    .diagnostic-wrapper::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.1;
+        animation: float 20s ease-in-out infinite;
+    }
+
+    .diagnostic-wrapper::before {
+        width: 400px;
+        height: 400px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        top: -200px;
+        right: -100px;
+        animation-delay: 0s;
+    }
+
+    .diagnostic-wrapper::after {
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        bottom: -150px;
+        left: -100px;
+        animation-delay: 5s;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px) scale(1);
+        }
+
+        50% {
+            transform: translateY(-30px) scale(1.1);
+        }
+    }
+
+    .diagnostic-container {
+        max-width: 1000px;
+        width: 100%;
+        background: var(--glass);
+        backdrop-filter: blur(30px);
+        border-radius: var(--radius-xl);
+        padding: 3.5rem;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--glass-border);
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .diagnostic-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .diagnostic-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .diagnostic-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.8rem;
+        font-weight: 900;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.8rem;
+        line-height: 1.2;
+    }
+
+    .diagnostic-subtitle {
+        color: var(--text-muted);
+        font-size: 1.15rem;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Cards Grid */
+    .choices-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .choice-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 3rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border: 3px solid transparent;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+
+    .choice-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        transition: left 0.6s;
+    }
+
+    .choice-card:hover::before {
+        left: 100%;
+    }
+
+    .choice-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        border-color: var(--primary);
+        box-shadow: var(--shadow-xl), 0 0 40px rgba(79, 70, 229, 0.3);
+    }
+
+    .choice-card.algerie {
+        background: linear-gradient(135deg, rgba(0, 128, 55, 0.05), rgba(210, 16, 52, 0.05));
+    }
+
+    .choice-card.france {
+        background: linear-gradient(135deg, rgba(0, 85, 164, 0.05), rgba(239, 65, 53, 0.05));
+    }
+
+    .choice-card:hover.algerie {
+        background: linear-gradient(135deg, rgba(0, 128, 55, 0.1), rgba(210, 16, 52, 0.1));
+    }
+
+    .choice-card:hover.france {
+        background: linear-gradient(135deg, rgba(0, 85, 164, 0.1), rgba(239, 65, 53, 0.1));
+    }
+
+    .choice-flag {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        display: block;
+        filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+        animation: rotate3d 3s ease-in-out infinite;
+    }
+
+    @keyframes rotate3d {
+
+        0%,
+        100% {
+            transform: perspective(400px) rotateY(0deg);
+        }
+
+        50% {
+            transform: perspective(400px) rotateY(10deg);
+        }
+    }
+
+    .choice-country {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .choice-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 1rem;
+    }
+
+    .choice-description {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .choice-btn {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .choice-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .choice-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .choice-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+    }
+
+    .choice-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Features list */
+    .choice-features {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+
+    .choice-features li {
+        padding: 0.5rem 0;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .choice-features li::before {
+        content: '✓';
+        color: var(--success);
+        font-weight: bold;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .diagnostic-container {
+            padding: 2rem 1.5rem;
+        }
+
+        .diagnostic-title {
+            font-size: 2rem;
+        }
+
+        .diagnostic-subtitle {
+            font-size: 1rem;
+        }
+
+        .choices-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .choice-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .choice-flag {
+            font-size: 4rem;
+        }
+
+        .choice-country {
+            font-size: 1.5rem;
+        }
+
+        .choice-title {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Pulse animation for user name */
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.8;
+        }
+    }
+
+    .user-name {
+        animation: pulse 2s infinite;
+    }
+</style>
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<div class="diagnostic-wrapper">
+    <div class="diagnostic-container">
+        <div class="diagnostic-header">
+            <div class="diagnostic-icon">🌍</div>
+            <h1 class="diagnostic-title">
+                Bienvenue <span class="user-name">{{ user.prenom }}</span> !
+            </h1>
+            <p class="diagnostic-subtitle">
+                Afin de personnaliser votre parcours, dites-nous où vous vous trouvez actuellement.
+                Votre expérience sera adaptée automatiquement !
+            </p>
+        </div>
+
+        <form method="POST" action="{{ url_for('diagnostic') }}">
+            <div class="choices-grid">
+                <!-- Choix Algérie -->
+                <div class="choice-card algerie" onclick="this.querySelector('button').click()">
+                    <span class="choice-flag">🇩🇿</span>
+                    <div class="choice-country">DZ</div>
+                    <h2 class="choice-title">Je suis en Algérie</h2>
+                    <p class="choice-description">
+                        Préparez votre départ pour la France : visa étudiant, rendez-vous consulat, documents requis.
+                    </p>
+                    <ul class="choice-features">
+                        <li>Guide visa complet</li>
+                        <li>Checklist documents</li>
+                        <li>Préparation financière</li>
+                        <li>Conseils pratiques</li>
+                    </ul>
+                    <button type="submit" name="situation" value="algerie" class="choice-btn">
+                        Commencer la préparation
+                        <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </div>
+
+                <!-- Choix France -->
+                <div class="choice-card france" onclick="this.querySelector('button').click()">
+                    <span class="choice-flag">🇫🇷</span>
+                    <div class="choice-country">FR</div>
+                    <h2 class="choice-title">Je suis en France</h2>
+                    <p class="choice-description">
+                        Configurez vos alertes de visa et accédez aux démarches d'installation en France.
+                    </p>
+                    <ul class="choice-features">
+                        <li>Suivi titre de séjour</li>
+                        <li>Alertes automatiques</li>
+                        <li>Guide installation</li>
+                        <li>Aide administrative</li>
+                    </ul>
+                    <button type="submit" name="situation" value="france" class="choice-btn">
+                        Configurer mes alertes
+                        <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+
+        // Prevent form submission when clicking outside buttons
+        document.querySelectorAll('.choice-card').forEach(card => {
+            card.addEventListener('click', function (e) {
+                if (e.target.tagName !== 'BUTTON') {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

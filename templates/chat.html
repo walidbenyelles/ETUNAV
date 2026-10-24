@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etunav - Chat Communautaire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+        }
+
+        .header h1 {
+            color: #4f46e5;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #4f46e5;
+            transform: translateX(-3px);
+        }
+
+        .chat-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 30px auto;
+            width: 95%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(248, 250, 252, 0.5);
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .region-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .region-item {
+            padding: 18px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #e2e8f0;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .region-item i {
+            font-size: 20px;
+            color: #64748b;
+        }
+
+        .region-item:hover {
+            background: rgba(79, 70, 229, 0.05);
+            color: #4f46e5;
+        }
+
+        .region-item:hover i {
+            color: #4f46e5;
+        }
+
+        .region-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .region-item.active i {
+            color: white;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 75%;
+        }
+
+        .msg-own {
+            align-self: flex-end;
+        }
+
+        .message .sender {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 6px;
+            margin-left: 2px;
+            font-weight: 600;
+        }
+
+        .msg-own .sender {
+            text-align: right;
+            margin-right: 2px;
+        }
+
+        .message .bubble {
+            padding: 14px 18px;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            color: #1e293b;
+            font-size: 15px;
+            line-height: 1.5;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-own .bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 4px;
+            border: none;
+        }
+
+        .message .time {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+
+        .msg-own .time {
+            text-align: right;
+        }
+
+        .chat-input-area {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px 25px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            outline: none;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: 0.3s;
+            background: #f8fafc;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                flex-direction: column;
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+
+            .region-list {
+                display: flex;
+                overflow-x: auto;
+                flex-direction: row;
+            }
+
+            .region-item {
+                border-bottom: none;
+                border-right: 1px solid #e2e8f0;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <a href="/" style="text-decoration:none;">
+            <h1>ETUNAV</h1>
+        </a>
+        <a href="/dashboard" class="back-btn"><i class="ri-arrow-left-line"></i> Dashboard</a>
+    </div>
+
+    <div class="chat-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                📍 Régions
+            </div>
+            <div class="region-list" id="region-list">
+                <div class="region-item active" data-region="ile-de-france"><i class="ri-map-pin-line"></i>
+                    Île-de-France</div>
+                <div class="region-item" data-region="auvergne-rhone-alpes"><i class="ri-map-pin-line"></i> Rhône-Alpes
+                </div>
+                <div class="region-item" data-region="hauts-de-france"><i class="ri-map-pin-line"></i> Hauts-de-France
+                </div>
+                <div class="region-item" data-region="paca"><i class="ri-map-pin-line"></i> PACA</div>
+                <div class="region-item" data-region="grand-est"><i class="ri-map-pin-line"></i> Grand Est</div>
+            </div>
+        </div>
+
+        <div class="chat-main">
+            <div class="chat-header">
+                <i class="ri-chat-smile-3-fill" style="color:#667eea; font-size: 24px;"></i>
+                <span id="current-region-name">Île-de-France</span>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages JS -->
+            </div>
+
+            <form class="chat-input-area" id="chat-form" onsubmit="sendMessage(event)">
+                <input type="text" id="message-input" class="chat-input" placeholder="Écrivez un message..."
+                    autocomplete="off" required>
+                <button type="submit" class="send-btn" id="send-btn"><i class="ri-send-plane-fill"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const USER_ID = {{ user.id }};
+        let currentRegion = 'ile-de-france';
+
+        const regionItems = document.querySelectorAll('.region-item');
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const regionNameTitle = document.getElementById('current-region-name');
+
+        regionItems.forEach(item => {
+            item.addEventListener('click', () => {
+                regionItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                currentRegion = item.getAttribute('data-region');
+                regionNameTitle.textContent = item.textContent.trim();
+                loadMessages();
+            });
+        });
+
+        async function loadMessages() {
+            try {
+                const res = await fetch(`/api/chat/${currentRegion}`);
+                const data = await res.json();
+
+                chatMessages.innerHTML = '';
+                if (data.messages && data.messages.length === 0) {
+                    chatMessages.innerHTML = `<div style="text-align:center; color:#94a3b8; margin-top:40px; font-weight:600;">👋 Soyez le premier à envoyer un message dans cette région !</div>`;
+                } else if (data.messages) {
+                    data.messages.forEach(msg => {
+                        appendMessage(msg);
+                    });
+                }
+                scrollToBottom();
+            } catch (e) {
+                console.error('Error loading chat:', e);
+            }
+        }
+
+        function appendMessage(msg) {
+            const isOwn = msg.user_id === USER_ID;
+            const div = document.createElement('div');
+            div.className = `message ${isOwn ? 'msg-own' : ''}`;
+
+            div.innerHTML = `
+                <div class="sender">${isOwn ? 'Vous' : msg.user_name}</div>
+                <div class="bubble">${msg.content}</div>
+                <div class="time">${msg.timestamp}</div>
+            `;
+            chatMessages.appendChild(div);
+        }
+
+        async function sendMessage(e) {
+            e.preventDefault();
+            const content = messageInput.value.trim();
+            if (!content) return;
+
+            sendBtn.disabled = true;
+            try {
+                const res = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ region: currentRegion, content: content })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    messageInput.value = '';
+                    if (chatMessages.innerHTML.includes('Soyez le premier')) {
+                        chatMessages.innerHTML = '';
+                    }
+                    appendMessage(data.message);
+                    scrollToBottom();
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Erreur lors de l'envoi du message");
+            } finally {
+                sendBtn.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        setInterval(loadMessages, 5000);
+        loadMessages();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 5%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-card {
+        max-width: 500px;
+        width: 100%;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2.5rem;
+        box-shadow: var(--shadow-xl);
+        animation: fadeInUp 0.6s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--gradient-primary);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .auth-header .icon-circle {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .auth-header h2 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .auth-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .auth-header .email-display {
+        display: inline-block;
+        background: rgba(102, 126, 234, 0.1);
+        color: var(--primary);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .code-inputs {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        margin: 2rem 0;
+    }
+
+    .code-input {
+        width: 60px;
+        height: 70px;
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 800;
+        font-family: 'Courier New', monospace;
+        background: white;
+        border: 2px solid rgba(148, 163, 184, 0.2);
+        border-radius: var(--radius-md);
+        color: var(--text-main);
+        transition: all 0.3s ease;
+    }
+
+    .code-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .timer-box {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 4px solid #f59e0b;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-md);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .timer-box p {
+        margin: 0;
+        color: #92400e;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .timer {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #f59e0b;
+        font-family: 'Courier New', monospace;
+    }
+
+    .btn-submit {
+        width: 100%;
+        margin-top: 1.5rem;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .resend-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .resend-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .resend-link a:hover {
+        text-decoration: underline;
+    }
+
+    .resend-link.disabled a {
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon-circle">
+                <i data-lucide="mail" style="width: 40px; height: 40px; color: white;"></i>
+            </div>
+            <h2>Vérifiez votre email</h2>
+            <p>Nous avons envoyé un code de vérification à :</p>
+            <span class="email-display">{{ email }}</span>
+        </div>
+
+        <div class="timer-box">
+            <p>⏱️ Code valide pendant : <span class="timer" id="timer">10:00</span></p>
+        </div>
+
+        <form method="POST" id="verifyForm">
+            <div class="code-inputs">
+                <input type="text" class="code-input" maxlength="1" id="digit1" autofocus>
+                <input type="text" class="code-input" maxlength="1" id="digit2">
+                <input type="text" class="code-input" maxlength="1" id="digit3">
+                <input type="text" class="code-input" maxlength="1" id="digit4">
+                <input type="text" class="code-input" maxlength="1" id="digit5">
+                <input type="text" class="code-input" maxlength="1" id="digit6">
+            </div>
+            <input type="hidden" name="code" id="codeInput">
+
+            <button type="submit" class="btn btn-primary btn-submit">
+                <i data-lucide="check-circle" style="width: 20px; height: 20px;"></i>
+                Vérifier le code
+            </button>
+        </form>
+
+        <div class="resend-link" id="resendContainer">
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">Vous n'avez pas reçu le code ?</p>
+            <a href="{{ url_for('resend_verification_code') }}" id="resendLink">
+                <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+                Renvoyer le code
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+
+        // Gestion des inputs de code
+        const inputs = document.querySelectorAll('.code-input');
+        const form = document.getElementById('verifyForm');
+        const codeInput = document.getElementById('codeInput');
+
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', function (e) {
+                if (this.value.length === 1) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+                updateCodeValue();
+            });
+
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && this.value === '') {
+                    if (index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            });
+
+            input.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').replace(/\s/g, '');
+                if (/^\d{6}$/.test(pastedData)) {
+                    pastedData.split('').forEach((char, i) => {
+                        if (inputs[i]) {
+                            inputs[i].value = char;
+                        }
+                    });
+                    inputs[5].focus();
+                    updateCodeValue();
+                }
+            });
+        });
+
+        function updateCodeValue() {
+            const code = Array.from(inputs).map(input => input.value).join('');
+            codeInput.value = code;
+        }
+
+        form.addEventListener('submit', function (e) {
+            updateCodeValue();
+            if (codeInput.value.length !== 6) {
+                e.preventDefault();
+                alert('Veuillez entrer le code à 6 chiffres');
+            }
+        });
+
+        // Timer countdown
+        let timeLeft = 600; // 10 minutes en secondes
+        const timerElement = document.getElementById('timer');
+        const resendContainer = document.getElementById('resendContainer');
+        const resendLink = document.getElementById('resendLink');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft <= 0) {
+                timerElement.textContent = 'Expiré';
+                timerElement.style.color = '#ef4444';
+                resendContainer.classList.remove('disabled');
+            } else if (timeLeft <= 60) {
+                timerElement.style.color = '#ef4444';
+            }
+
+            timeLeft--;
+        }
+
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+    });
+</script>
+{% endblock %}

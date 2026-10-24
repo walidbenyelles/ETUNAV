@@ -1,0 +1,739 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    /* Floating animated background shapes */
+    .floating-shapes {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.3;
+        animation: floatShapes 20s infinite ease-in-out;
+    }
+
+    .shape1 {
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+
+    .shape2 {
+        width: 250px;
+        height: 250px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        top: 60%;
+        right: 10%;
+        animation-delay: 7s;
+    }
+
+    .shape3 {
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        bottom: 20%;
+        left: 50%;
+        animation-delay: 14s;
+    }
+
+    @keyframes floatShapes {
+
+        0%,
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        33% {
+            transform: translate(50px, -50px) rotate(120deg);
+        }
+
+        66% {
+            transform: translate(-30px, 30px) rotate(240deg);
+        }
+    }
+
+    /* Hero Section */
+    .hero-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        padding: 5rem 0 3rem;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-content {
+        animation: fadeInLeft 0.8s ease-out;
+    }
+
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .badge {
+        display: inline-block;
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        color: var(--primary);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        border: 2px solid rgba(79, 70, 229, 0.2);
+        letter-spacing: 0.5px;
+        animation: float 3s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .badge::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transform: rotate(45deg);
+        animation: badgeShine 3s infinite;
+    }
+
+    @keyframes badgeShine {
+        0% {
+            left: -50%;
+        }
+
+        100% {
+            left: 150%;
+        }
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .hero-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-top: 1.5rem;
+        line-height: 1.1;
+        background: linear-gradient(135deg, #1e293b 0%, #4f46e5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleReveal 1s ease-out;
+    }
+
+    @keyframes titleReveal {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-title .highlight {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-block;
+        animation: shimmer 2s infinite;
+        position: relative;
+    }
+
+    .hero-title .highlight::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+        animation: underlineExpand 1s ease-out;
+    }
+
+    @keyframes underlineExpand {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: 100%;
+        }
+    }
+
+    @keyframes shimmer {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.8;
+        }
+    }
+
+    .hero-description {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        margin: 2rem 0;
+        line-height: 1.7;
+        animation: fadeIn 1.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        animation: fadeIn 1.4s ease-out;
+    }
+
+    .hero-image-wrapper {
+        position: relative;
+        animation: fadeInRight 0.8s ease-out;
+        perspective: 1000px;
+    }
+
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .hero-image {
+        width: 100%;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        transform: rotate(-2deg);
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: imageFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes imageFloat {
+
+        0%,
+        100% {
+            transform: rotate(-2deg) translateY(0px);
+        }
+
+        50% {
+            transform: rotate(-1deg) translateY(-10px);
+        }
+    }
+
+    .hero-image:hover {
+        transform: rotate(0deg) scale(1.02);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+    }
+
+    .floating-card {
+        position: absolute;
+        background: white;
+        padding: 1.2rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: floatCard 3s ease-in-out infinite;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .floating-card:hover {
+        transform: translateY(-20px) scale(1.05);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes floatCard {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    .floating-card-1 {
+        bottom: 30px;
+        left: -30px;
+        background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+    }
+
+    .floating-card-2 {
+        top: 30px;
+        right: -30px;
+        animation-delay: 1.5s;
+        background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+    }
+
+    /* Feature Cards */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 4rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .feature-card {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem 2rem;
+        border: 1px solid var(--glass-border);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+
+    .feature-card::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover::after {
+        width: 500px;
+        height: 500px;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: var(--radius-md);
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.4s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-card h3 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        color: var(--text-main);
+        position: relative;
+        z-index: 1;
+    }
+
+    .feature-card p {
+        color: var(--text-muted);
+        line-height: 1.6;
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .feature-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: gap 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    .feature-link:hover {
+        gap: 0.8rem;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: var(--radius-xl);
+        padding: 3rem;
+        margin: 5rem 0;
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(79, 70, 229, 0.05) 0%, transparent 70%);
+        animation: statsRotate 30s linear infinite;
+    }
+
+    @keyframes statsRotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-item {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stat-item:hover {
+        transform: scale(1.1);
+    }
+
+    .stat-item h4 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 3rem;
+        font-weight: 900;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        animation: countUp 2s ease-out;
+    }
+
+    @keyframes countUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stat-item p {
+        color: var(--text-muted);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    /* Section Headers */
+    .section-header {
+        text-align: center;
+        margin: 5rem 0 3rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #1e293b 0%, #4f46e5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Scroll reveal animation */
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease-out;
+    }
+
+    .scroll-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+        .hero-section {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .floating-card {
+            display: none;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-section {
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            gap: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Floating Background Shapes -->
+<div class="floating-shapes">
+    <div class="shape shape1"></div>
+    <div class="shape shape2"></div>
+    <div class="shape shape3"></div>
+</div>
+
+<section class="hero-section">
+    <div class="hero-content">
+        <span class="badge">
+            🚀 Ton futur commence ici
+        </span>
+        <h1 class="hero-title">
+            Navigue dans ta <span class="highlight">vie d'adulte</span> sans couler.
+        </h1>
+        <p class="hero-description">
+            Le guide ultime pour les étudiants : administratif, logement, finances et bien plus.
+            Transforme ta vie étudiante en aventure réussie.
+        </p>
+        <div class="hero-buttons">
+            <a href="#" class="btn btn-primary">
+                <i data-lucide="rocket" style="width: 20px; height: 20px;"></i>
+                Démarrer l'aventure
+            </a>
+            <a href="#" class="btn btn-secondary">
+                <i data-lucide="book-open" style="width: 20px; height: 20px;"></i>
+                Explorer les guides
+            </a>
+        </div>
+    </div>
+
+    <div class="hero-image-wrapper">
+        <img src="{{ url_for('static', filename='images/hero_students.png') }}" alt="Étudiants célébrant leur succès"
+            class="hero-image">
+        <div class="floating-card floating-card-1">
+            <i data-lucide="check-circle" style="color: #10b981; width: 28px; height: 28px;"></i>
+            <div>
+                <div style="font-weight: 700; font-size: 0.95rem;">Dossier CAF validé !</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Il y a 2 minutes</div>
+            </div>
+        </div>
+        <div class="floating-card floating-card-2">
+            <i data-lucide="home" style="color: #f59e0b; width: 28px; height: 28px;"></i>
+            <div>
+                <div style="font-weight: 700; font-size: 0.95rem;">Logement trouvé</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Proche de ton campus</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="stats-section scroll-reveal">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <h4>10K+</h4>
+            <p>Étudiants accompagnés</p>
+        </div>
+        <div class="stat-item">
+            <h4>95%</h4>
+            <p>Taux de satisfaction</p>
+        </div>
+        <div class="stat-item">
+            <h4>50+</h4>
+            <p>Guides pratiques</p>
+        </div>
+        <div class="stat-item">
+            <h4>24/7</h4>
+            <p>Support disponible</p>
+        </div>
+    </div>
+</div>
+
+<div class="section-header scroll-reveal">
+    <h2 class="section-title">Tout ce dont tu as besoin</h2>
+    <p class="section-subtitle">
+        Des outils et guides pour chaque aspect de ta vie étudiante
+    </p>
+</div>
+
+<div class="features-grid">
+    <div class="feature-card scroll-reveal">
+        <img src="{{ url_for('static', filename='images/admin_icon.png') }}" alt="Administratif" class="feature-icon">
+        <h3>Administratif</h3>
+        <p>Ne laisse plus les formulaires te faire peur. Guides étape par étape pour toutes tes démarches
+            administratives.</p>
+        <a href="#" class="feature-link">
+            En savoir plus
+            <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+        </a>
+    </div>
+
+    <div class="feature-card scroll-reveal">
+        <img src="{{ url_for('static', filename='images/finance_icon.png') }}" alt="Budget & Finances"
+            class="feature-icon">
+        <h3>Budget & Finances</h3>
+        <p>Apprends à gérer tes euros pour finir le mois avec le sourire. Outils de budgétisation et conseils
+            financiers.</p>
+        <a href="#" class="feature-link">
+            En savoir plus
+            <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+        </a>
+    </div>
+
+    <div class="feature-card scroll-reveal">
+        <img src="{{ url_for('static', filename='images/housing_icon.png') }}" alt="Logement" class="feature-icon">
+        <h3>Logement</h3>
+        <p>Trouve le logement parfait et gère ton bail en toute sérénité. Checklist et conseils pour ton appart.</p>
+        <a href="#" class="feature-link">
+            En savoir plus
+            <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+        </a>
+    </div>
+</div>
+
+<script>
+    // Scroll reveal animation
+    function revealOnScroll() {
+        const reveals = document.querySelectorAll('.scroll-reveal');
+
+        reveals.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const elementVisible = 150;
+
+            if (elementTop < window.innerHeight - elementVisible) {
+                element.classList.add('revealed');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', revealOnScroll);
+
+    // Initial check
+    revealOnScroll();
+
+    // Add parallax effect to hero image
+    const heroImage = document.querySelector('.hero-image-wrapper');
+
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        if (heroImage) {
+            heroImage.style.transform = `translateY(${scrolled * 0.3}px)`;
+        }
+    });
+</script>
+{% endblock %}

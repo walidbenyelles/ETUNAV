@@ -1,0 +1,1033 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    /* Dashboard Moderne - Variables CSS */
+    :root {
+        --sidebar-width: 280px;
+        --header-height: 70px;
+        --bubble-spacing: 25px;
+    }
+
+    /* Layout Principal */
+    .dashboard-layout {
+        display: flex;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        position: relative;
+    }
+
+    /* ========= SIDEBAR ========= */
+    .sidebar {
+        width: var(--sidebar-width);
+        background: white;
+        box-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 900;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+
+    .sidebar-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 0;
+    }
+
+    .sidebar-section {
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .sidebar-section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.3rem;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-main);
+        text-decoration: none;
+        position: relative;
+    }
+
+    .sidebar-item:hover {
+        background: rgba(102, 126, 234, 0.1);
+        color: var(--primary);
+        transform: translateX(5px);
+    }
+
+    .sidebar-item.active {
+        background: var(--gradient-primary);
+        color: white;
+    }
+
+    .sidebar-item-icon {
+        font-size: 1.3rem;
+    }
+
+    .sidebar-item-text {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .sidebar-badge {
+        margin-left: auto;
+        background: var(--danger);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    /* Progression globale */
+    .sidebar-progress {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-radius: var(--radius-lg);
+        margin: 0 1rem 1.5rem 1rem;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.8rem;
+    }
+
+    .progress-percentage {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .progress-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 50px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: var(--gradient-primary);
+        border-radius: 50px;
+        transition: width 0.5s ease;
+    }
+
+    .progress-steps {
+        margin-top: 0.8rem;
+        font-size: 0.85rem;
+        color: var(--text-main);
+    }
+
+    /* ========= HEADER ========= */
+    .dashboard-header {
+        position: fixed;
+        top: 0;
+        left: var(--sidebar-width);
+        right: 0;
+        height: var(--header-height);
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+    }
+
+    /* Barre de recherche */
+    .search-container {
+        flex: 1;
+        max-width: 600px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.8rem 1.2rem 0.8rem 3rem;
+        border: 2px solid var(--glass-border);
+        border-radius: 50px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    /* Actions rapides */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .action-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        font-size: 1.3rem;
+    }
+
+    .action-btn:hover {
+        background: var(--primary);
+        border-color: var(--primary);
+        transform: scale(1.1);
+    }
+
+    .action-btn:hover {
+        filter: brightness(1.2);
+    }
+
+    .action-btn-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--danger);
+        color: white;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    /* ========= MAIN CONTENT ========= */
+    .dashboard-main {
+        margin-left: var(--sidebar-width);
+        margin-top: var(--header-height);
+        padding: 2.5rem;
+        flex: 1;
+    }
+
+    .welcome-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .welcome-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-subtitle {
+        color: var(--text-muted);
+        font-size: 1.05rem;
+    }
+
+    /* ========= BULLES DE DÉMARCHES ========= */
+    .bubbles-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: var(--bubble-spacing);
+        position: relative;
+    }
+
+    .bubble-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bubble-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--bubble-color, #667eea), transparent);
+    }
+
+    .bubble-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--bubble-color, var(--primary));
+    }
+
+    .bubble-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .bubble-icon-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .bubble-emoji {
+        font-size: 3rem;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    }
+
+    .bubble-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.3rem;
+        color: var(--text-main);
+        line-height: 1.2;
+    }
+
+    .bubble-checkbox {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--glass-border);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .bubble-checkbox.checked {
+        background: var(--success);
+        border-color: var(--success);
+        position: relative;
+    }
+
+    .bubble-checkbox.checked::after {
+        content: '✓';
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+    }
+
+    .bubble-description {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .bubble-progress {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .bubble-progress-bar {
+        flex: 1;
+        height: 6px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 50px;
+        overflow: hidden;
+    }
+
+    .bubble-progress-fill {
+        height: 100%;
+        background: var(--bubble-color, var(--primary));
+        border-radius: 50px;
+        transition: width 0.5s ease;
+    }
+
+    .bubble-progress-text {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--bubble-color, var(--primary));
+    }
+
+    .bubble-priority {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .priority-1 {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+    }
+
+    .priority-2 {
+        background: rgba(251, 146, 60, 0.1);
+        color: #ea580c;
+    }
+
+    .priority-3 {
+        background: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+    }
+
+    /* ========= PANNEAU DE DÉTAILS ========= */
+    .details-panel {
+        position: fixed;
+        right: -500px;
+        top: 0;
+        width: 500px;
+        height: 100vh;
+        background: white;
+        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.15);
+        z-index: 2000;
+        transition: right 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        overflow-y: auto;
+    }
+
+    .details-panel.open {
+        right: 0;
+    }
+
+    .details-header {
+        padding: 2rem;
+        background: var(--gradient-primary);
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .details-close {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .details-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+
+    .details-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+    }
+
+    .details-description {
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+
+    .details-content {
+        padding: 2rem;
+    }
+
+    .details-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .details-section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .details-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .details-list li {
+        padding: 0.8rem 1rem;
+        background: var(--glass);
+        border-radius: var(--radius-md);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .details-list li::before {
+        content: '📄';
+        font-size: 1.2rem;
+    }
+
+    .details-list.checklist li {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .details-list.checklist li:hover {
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    .details-list.checklist li::before {
+        content: '☐';
+        font-size: 1.3rem;
+    }
+
+    .details-list.checklist li.checked::before {
+        content: '✅';
+    }
+
+    .details-resources {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .resource-link {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem;
+        background: var(--glass);
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        color: var(--primary);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .resource-link:hover {
+        background: rgba(102, 126, 234, 0.1);
+        transform: translateX(5px);
+    }
+
+    /* ========= RESPONSIVE ========= */
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .menu-toggle {
+            display: block;
+        }
+
+        .dashboard-header,
+        .dashboard-main {
+            margin-left: 0;
+        }
+
+        .bubbles-container {
+            grid-template-columns: 1fr;
+        }
+
+        .details-panel {
+            width: 100%;
+            right: -100%;
+        }
+    }
+
+    /* Search Results Dropdown */
+    .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-xl);
+        margin-top: 0.5rem;
+        max-height: 400px;
+        overflow-y: auto;
+        display: none;
+    }
+
+    .search-results.show {
+        display: block;
+    }
+
+    .search-result-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--glass-border);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-result-item:hover {
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <span>🧭</span>
+                <span>ETUNAV</span>
+            </div>
+            <button class="menu-toggle" id="sidebar-close-btn" onclick="toggleSidebar()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Navigation</div>
+                <a href="#" class="sidebar-item active" data-filter="all">
+                    <span class="sidebar-item-icon">🏠</span>
+                    <span class="sidebar-item-text">Toutes les démarches</span>
+                </a>
+                <a href="#" class="sidebar-item" data-filter="logement">
+                    <span class="sidebar-item-icon">🏠</span>
+                    <span class="sidebar-item-text">Logement</span>
+                </a>
+                <a href="#" class="sidebar-item" data-filter="aides">
+                    <span class="sidebar-item-icon">💰</span>
+                    <span class="sidebar-item-text">Aides financières</span>
+                </a>
+                <a href="#" class="sidebar-item" data-filter="sante">
+                    <span class="sidebar-item-icon">🏥</span>
+                    <span class="sidebar-item-text">Santé</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Communauté</div>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-item-icon">💬</span>
+                    <span class="sidebar-item-text">Chat régional</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-item-icon">🔔</span>
+                    <span class="sidebar-item-text">Alertes</span>
+                    <span class="sidebar-badge">3</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-item-icon">📬</span>
+                    <span class="sidebar-item-text">Notifications</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Compte</div>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-item-icon">⚙️</span>
+                    <span class="sidebar-item-text">Paramètres</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Progression globale -->
+        <div class="sidebar-progress">
+            <div class="progress-header">
+                <span class="progress-percentage" id="progress-percentage">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="progress-steps" id="progress-steps">
+                0 / 0 étapes complétées
+            </div>
+        </div>
+    </aside>
+
+    <!-- HEADER -->
+    <header class="dashboard-header">
+        <!-- Bouton menu hamburger pour mobile -->
+        <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()"
+            style="display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; margin-right: 1rem;">
+            ☰
+        </button>
+
+        <div class="search-container">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" class="search-input"
+                placeholder="Rechercher démarches, mots-clés ... (ex: APL, visa, assurance)" id="search-input">
+            <div class="search-results" id="search-results"></div>
+        </div>
+
+        <div class="header-actions">
+            <button class="action-btn" title="Alertes">
+                ⚠️
+                <span class="action-btn-badge">3</span>
+            </button>
+            <button class="action-btn" title="Messages">
+                💬
+                <span class="action-btn-badge">5</span>
+            </button>
+            <button class="action-btn" title="Notifications">
+                🔔
+                <span class="action-btn-badge">2</span>
+            </button>
+            <button class="action-btn" title="Paramètres">
+                ⚙️
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+        <div class="welcome-section">
+            <h1 class="welcome-title">Bonjour, <span id="user-name">{{ user.prenom }}</span> ! 👋</h1>
+            <p class="welcome-subtitle">Voici vos démarches importantes pour réussir votre installation.</p>
+        </div>
+
+        <!-- Bulles de démarches -->
+        <div class="bubbles-container" id="bubbles-container">
+            <!-- Les bulles seront générées dynamiquement par JavaScript -->
+        </div>
+    </main>
+
+    <!-- PANNEAU DE DÉTAILS -->
+    <div class="details-panel" id="details-panel">
+        <div class="details-header">
+            <button class="details-close" id="details-close">
+                <i data-lucide="x"></i>
+            </button>
+            <h2 class="details-title" id="details-step-title">Titre de l'étape</h2>
+            <p class="details-description" id="details-step-description">Description</p>
+        </div>
+
+        <div class="details-content">
+            <!-- Documents nécessaires -->
+            <div class="details-section" id="details-documents-section">
+                <h3 class="details-section-title">
+                    <i data-lucide="file-text"></i>
+                    Documents nécessaires
+                </h3>
+                <ul class="details-list" id="details-documents"></ul>
+            </div>
+
+            <!-- Sous-étapes -->
+            <div class="details-section" id="details-substeps-section">
+                <h3 class="details-section-title">
+                    <i data-lucide="check-square"></i>
+                    Étapes à suivre
+                </h3>
+                <ul class="details-list checklist" id="details-substeps"></ul>
+            </div>
+
+            <!-- Ressources et liens -->
+            <div class="details-section" id="details-resources-section">
+                <h3 class="details-section-title">
+                    <i data-lucide="link"></i>
+                    Ressources utiles
+                </h3>
+                <div class="details-resources" id="details-resources"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fonction globale pour toggle sidebar
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+
+        let dashboardData = null;
+        let currentStepId = null;
+
+        // Charger les données
+        loadDashboardData();
+
+        // Fermer le panneau de détails
+        document.getElementById('details-close').addEventListener('click', closeDetailsPanel);
+
+        // Recherche
+        let searchTimeout;
+        document.getElementById('search-input').addEventListener('input', function (e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value;
+
+            if (query.length < 2) {
+                document.getElementById('search-results').classList.remove('show');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => performSearch(query), 300);
+        });
+
+        // Fonctions
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/dashboard/data');
+                dashboardData = await response.json();
+                renderBubbles();
+                updateProgress();
+            } catch (error) {
+                console.error('Erreur chargement données:', error);
+            }
+        }
+
+        function renderBubbles() {
+            const container = document.getElementById('bubbles-container');
+            container.innerHTML = '';
+
+            dashboardData.categories.forEach(category => {
+                category.steps.forEach(step => {
+                    const bubble = createBubbleCard(step, category);
+                    container.appendChild(bubble);
+                });
+            });
+
+            lucide.createIcons();
+        }
+
+        function createBubbleCard(step, category) {
+            const div = document.createElement('div');
+            div.className = 'bubble-card';
+            div.style.setProperty('--bubble-color', category.color);
+            div.dataset.stepId = step.id;
+            div.dataset.categoryId = category.id;
+
+            const totalSubSteps = step.sub_steps.length;
+            const completedSubSteps = 0;  // À implémenter
+            const progressPercent = totalSubSteps > 0 ? (completedSubSteps / totalSubSteps * 100) : 0;
+
+            const priorityClass = `priority-${step.priority}`;
+            const priorityLabel = step.priority === 1 ? 'Essentiel' : (step.priority === 2 ? 'Important' : 'Recommandé');
+
+            div.innerHTML = `
+            <div class="bubble-header">
+                <div class="bubble-icon-title">
+                    <span class="bubble-emoji">${category.emoji}</span>
+                    <div>
+                        <h3 class="bubble-title">${step.title}</h3>
+                        <span class="bubble-priority ${priorityClass}">${priorityLabel}</span>
+                    </div>
+                </div>
+                <div class="bubble-checkbox ${step.completed ? 'checked' : ''}" data-step-id="${step.id}"></div>
+            </div>
+            <p class="bubble-description">${step.description}</p>
+            <div class="bubble-progress">
+                <div class="bubble-progress-bar">
+                    <div class="bubble-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <span class="bubble-progress-text">${totalSubSteps > 0 ? `${completedSubSteps}/${totalSubSteps}` : '—'}</span>
+            </div>
+        `;
+
+            // Click sur la carte
+            div.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('bubble-checkbox')) {
+                    openDetailsPanel(step, category);
+                }
+            });
+
+            // Click sur la checkbox
+            const checkbox = div.querySelector('.bubble-checkbox');
+            checkbox.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleStep(step.id, checkbox);
+            });
+
+            return div;
+        }
+
+        async function toggleStep(stepId, checkboxElement) {
+            try {
+                const response = await fetch(`/api/step/${stepId}/toggle`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    checkboxElement.classList.toggle('checked', data.completed);
+                    await loadDashboardData();  // Recharger pour mettre à jour la progression
+                }
+            } catch (error) {
+                console.error('Erreur toggle step:', error);
+            }
+        }
+
+        function openDetailsPanel(step, category) {
+            currentStepId = step.id;
+
+            document.getElementById('details-step-title').textContent = step.title;
+            document.getElementById('details-step-description').textContent = step.description;
+
+            // Documents
+            const docsList = document.getElementById('details-documents');
+            docsList.innerHTML = '';
+            step.documents_needed.forEach(doc => {
+                const li = document.createElement('li');
+                li.textContent = doc;
+                docsList.appendChild(li);
+            });
+
+            // Sous-étapes
+            const subStepsList = document.getElementById('details-substeps');
+            subStepsList.innerHTML = '';
+            step.sub_steps.forEach(subStep => {
+                const li = document.createElement('li');
+                li.textContent = subStep;
+                subStepsList.appendChild(li);
+            });
+
+            // Ressources
+            const resourcesDiv = document.getElementById('details-resources');
+            resourcesDiv.innerHTML = '';
+            step.resources.forEach(resource => {
+                const a = document.createElement('a');
+                a.href = resource.url;
+                a.target = '_blank';
+                a.className = 'resource-link';
+                a.innerHTML = `
+                <i data-lucide="external-link"></i>
+                <span>${resource.label}</span>
+            `;
+                resourcesDiv.appendChild(a);
+            });
+
+            document.getElementById('details-panel').classList.add('open');
+            lucide.createIcons();
+        }
+
+        function closeDetailsPanel() {
+            document.getElementById('details-panel').classList.remove('open');
+        }
+
+        async function updateProgress() {
+            try {
+                const response = await fetch(`/api/progress/${dashboardData.user.id}`);
+                const progress = await response.json();
+
+                document.getElementById('progress-percentage').textContent = `${progress.percentage}%`;
+                document.getElementById('progress-bar').style.width = `${progress.percentage}%`;
+                document.getElementById('progress-steps').textContent =
+                    `${progress.completed_steps} / ${progress.total_steps} étapes complétées`;
+            } catch (error) {
+                console.error('Erreur mise à jour progression:', error);
+            }
+        }
+
+        async function performSearch(query) {
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                const resultsDiv = document.getElementById('search-results');
+                resultsDiv.innerHTML = '';
+
+                if (data.results.length === 0) {
+                    resultsDiv.innerHTML = '<div class="search-result-item">Aucun résultat trouvé</div>';
+                } else {
+                    data.results.forEach(result => {
+                        const div = document.createElement('div');
+                        div.className = 'search-result-item';
+                        div.innerHTML = `
+                        <strong>${result.emoji || ''} ${result.name || result.title}</strong><br>
+                        <small>${result.description}</small>
+                    `;
+                        resultsDiv.appendChild(div);
+                    });
+                }
+
+                resultsDiv.classList.add('show');
+            } catch (error) {
+                console.error('Erreur recherche:', error);
+            }
+        }
+    });
+</script>
+{% endblock %}

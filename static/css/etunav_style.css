@@ -1,0 +1,548 @@
+:root {
+    --primary: #4f46e5;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --glass: rgba(255, 255, 255, 0.9);
+    /* Retour à l'ancienne couleur claire */
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --panelW: 280px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    min-height: 100vh;
+    overflow-x: clip;
+    /* clip preserves sticky top positioning */
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* --- HEADER (Couleur originale restaurée) --- */
+header {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1.2rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    /* Espace entre les deux boutons */
+}
+
+.btn-secondary {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    /* Plus transparent que le header */
+    color: #1e293b;
+    /* Texte sombre pour la lisibilité sur fond blanc/glass */
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* --- BOUTON PRIMAIRE (DÉCONNEXION) --- */
+.btn-primary {
+    padding: 10px 20px;
+    background: var(--gradient-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--primary);
+    font-size: 1.3rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    margin-right: 10px;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #4338ca;
+}
+
+/* --- BRAIN SECTION --- */
+.static-brain-container {
+    position: fixed;
+    /* Il ne bouge plus au scroll */
+    top: 55%;
+    /* Ajuste la hauteur (50% pour le milieu pile) */
+    left: 50%;
+    /* Centrage horizontal */
+    transform: translate(-50%, -50%);
+    /* Centrage parfait */
+    z-index: 5;
+    /* Reste derrière le header (100) et le menu (1000) */
+    pointer-events: none;
+    /* Permet de cliquer sur des éléments derrière si besoin */
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.static-brain {
+    display: flex;
+    gap: 15px;
+    transform: scale(0.85);
+    /* Garde la dimension que tu as choisie */
+}
+
+.s-lobe {
+    width: 450px;
+    height: 580px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+}
+
+.s-left {
+    border-radius: 42% 58% 35% 65% / 45% 45% 25% 55%;
+}
+
+.s-right {
+    border-radius: 58% 42% 65% 35% / 45% 45% 55% 25%;
+}
+
+/* Style de base des cercles */
+.orbit-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    z-index: 4;
+    /* Juste derrière les lobes du cerveau */
+}
+
+/* Premier cercle (plus grand, tourne lentement) */
+.orbit-1 {
+    width: 700px;
+    height: 700px;
+    animation: rotateOrbit 30s linear infinite;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+/* Deuxième cercle (plus petit, tourne plus vite dans l'autre sens) */
+.orbit-2 {
+    width: 550px;
+    height: 550px;
+    animation: rotateOrbitReverse 20s linear infinite;
+    border: 1px dotted rgba(255, 255, 255, 0.25);
+}
+
+/* Animations de rotation */
+@keyframes rotateOrbit {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotateOrbitReverse {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* --- SIDEBAR MENU --- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s;
+    z-index: 500;
+}
+
+.overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--panelW);
+    height: 100vh;
+    background: white;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.panel.open {
+    transform: translateX(0);
+}
+
+.handle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 46px;
+    height: 46px;
+    background: white;
+    border-radius: 12px;
+    z-index: 1100;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease;
+}
+
+.handle.open {
+    left: calc(var(--panelW) + 15px);
+}
+
+.handle:active {
+    transform: scale(0.9);
+    /* Le bouton s'enfonce légèrement au clic */
+}
+
+.sticks span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #333;
+    margin: 4px 0;
+}
+
+.alertRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.alertBtn {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    border: none;
+    background: #f5f5f5;
+    position: relative;
+    cursor: pointer;
+}
+
+.alertBtn img {
+    width: 28px;
+}
+
+.alertDot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    background: #ff3b3b;
+    border-radius: 50%;
+    display: none;
+}
+
+.alertDot.show {
+    display: block;
+}
+
+.alertText .t {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.alertText .s {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.menu {
+    margin-top: 10px;
+}
+
+.item {
+    padding: 15px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: #f9f9f9;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.item:hover,
+.item.active {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.logoBox img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* --- FLOATING INFO CARDS --- */
+#task-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.task-card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 24px;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    width: 300px;
+    /* Reduced from 400px */
+    height: 220px;
+    /* Reduced from 260px */
+    pointer-events: auto;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Distribute content */
+    gap: 12px;
+}
+
+.task-card:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: scale(1.03) translateY(-4px);
+    z-index: 30;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-icon {
+    font-size: 1.4rem;
+    color: var(--primary);
+    background: rgba(79, 70, 229, 0.1);
+    padding: 8px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.btn-learn-more {
+    align-self: flex-start;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+    padding: 6px 12px;
+    background: rgba(79, 70, 229, 0.1);
+    border-radius: 8px;
+    transition: 0.2s;
+    margin-top: 5px;
+}
+
+.btn-learn-more:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Custom Checkbox */
+.task-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: white;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+
+.task-card.completed .task-checkbox {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.task-checkbox::after {
+    content: '✓';
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    display: none;
+}
+
+.task-card.completed .task-checkbox::after {
+    display: block;
+}
+
+.task-card.completed {
+    opacity: 0.7;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.task-card.completed h3,
+.task-card.completed .card-description {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.alertNavWrap {
+    margin-top: 12px;
+}
+
+.alertNavCard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    background: linear-gradient(135deg, #fff8f1 0%, #fff 100%);
+    border: 1px solid #f2e3d3;
+    border-radius: 14px;
+    padding: 14px 12px;
+    transition: 0.2s ease;
+    color: inherit;
+}
+
+.alertNavCard:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border-color: #f0c38f;
+}
+
+.alertNavIcon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: #fff0dd;
+    color: #c56a12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.alertNavText {
+    min-width: 0;
+    flex: 1;
+}
+
+.alertNavText .t {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #222;
+}
+
+.alertNavText .s {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+
+.alertNavArrow {
+    font-size: 20px;
+    color: #999;
+}

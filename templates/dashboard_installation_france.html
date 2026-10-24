@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    /* Dashboard French Students */
+    .dash-container {
+        padding: 3rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dash-header {
+        margin-bottom: 3rem;
+    }
+
+    .dash-header h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .dash-header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    /* Sections Grid */
+    .sections-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .section-card {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .section-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+
+    .section-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .section-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-main);
+    }
+
+    .section-description {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .section-items {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-items li {
+        padding: 0.5rem 0;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-items li::before {
+        content: '✓';
+        color: var(--primary);
+        font-weight: bold;
+    }
+
+    .section-btn {
+        width: 100%;
+        padding: 0.8rem 1.5rem;
+        background: white;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .section-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.02);
+    }
+
+    @media (max-width: 768px) {
+        .sections-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dash-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<div class="dash-container">
+    <div class="dash-header">
+        <h1>🏠 Installation en France</h1>
+        <p>Toutes les démarches pour bien démarrer votre vie étudiante en France</p>
+    </div>
+
+    <div class="sections-grid">
+        <!-- Logement -->
+        <div class="section-card">
+            <div class="section-icon">🏡</div>
+            <div class="section-title">Logement</div>
+            <div class="section-description">
+                Trouvez et sécurisez votre logement étudiant
+            </div>
+            <ul class="section-items">
+                <li>CROUS : logements universitaires</li>
+                <li>Résidences étudiantes privées</li>
+                <li>Colocation et appartements</li>
+                <li>Garanties et assurance habitation</li>
+            </ul>
+            <button class="section-btn">Explorer les options</button>
+        </div>
+
+        <!-- Aides Financières -->
+        <div class="section-card">
+            <div class="section-icon">💰</div>
+            <div class="section-title">Aides & Bourses</div>
+            <div class="section-description">
+                Accédez aux aides financières disponibles
+            </div>
+            <ul class="section-items">
+                <li>APL (Aide Personnalisée au Logement)</li>
+                <li>Bourses CROUS</li>
+                <li>Aides régionales et municipales</li>
+                <li>Jobs étudiants</li>
+            </ul>
+            <button class="section-btn">Découvrir les aides</button>
+        </div>
+
+        <!-- Santé -->
+        <div class="section-card">
+            <div class="section-icon">🏥</div>
+            <div class="section-title">Couverture Santé</div>
+            <div class="section-description">
+                Protection sociale et santé étudiante
+            </div>
+            <ul class="section-items">
+                <li>Sécurité sociale étudiante</li>
+                <li>Mutuelle complémentaire</li>
+                <li>Services de santé universitaire</li>
+                <li>Centres médicaux et urgences</li>
+            </ul>
+            <button class="section-btn">En savoir plus</button>
+        </div>
+
+        <!-- Transports -->
+        <div class="section-card">
+            <div class="section-icon">🚇</div>
+            <div class="section-title">Transports</div>
+            <div class="section-description">
+                Bougez facilement avec les tarifs étudiants
+            </div>
+            <ul class="section-items">
+                <li>Cartes de transport en commun</li>
+                <li>Réductions étudiantes (SNCF, bus)</li>
+                <li>Vélos et trottinettes en libre-service</li>
+                <li>Covoiturage</li>
+            </ul>
+            <button class="section-btn">Voir les offres</button>
+        </div>
+
+        <!-- Banque -->
+        <div class="section-card">
+            <div class="section-icon">🏦</div>
+            <div class="section-title">Banque</div>
+            <div class="section-description">
+                Ouvrez un compte bancaire étudiant
+            </div>
+            <ul class="section-items">
+                <li>Comptes bancaires gratuits</li>
+                <li>Cartes bancaires étudiantes</li>
+                <li>Virements et RIB</li>
+                <li>Services en ligne</li>
+            </ul>
+            <button class="section-btn">Comparer les banques</button>
+        </div>
+
+        <!-- Vie Associative -->
+        <div class="section-card">
+            <div class="section-icon">🎉</div>
+            <div class="section-title">Vie Associative</div>
+            <div class="section-description">
+                Intégrez-vous et participez à la vie étudiante
+            </div>
+            <ul class="section-items">
+                <li>Associations étudiantes</li>
+                <li>Événements et activités</li>
+                <li>Sport universitaire</li>
+                <li>Clubs et loisirs</li>
+            </ul>
+            <button class="section-btn">Participer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

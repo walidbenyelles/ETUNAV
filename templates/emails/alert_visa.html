@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
+        .content { padding: 30px; }
+        .alert-box { background-color: #fff5f5; border-left: 5px solid #feb2b2; padding: 15px; margin: 20px 0; color: #c53030; font-weight: bold; }
+        .footer { text-align: center; font-size: 12px; color: #718096; margin-top: 30px; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ETUNAV</h1>
+            <p>Alerte Échéance Document</p>
+        </div>
+        <div class="content">
+            <p>Bonjour {{ user.prenom }},</p>
+            <p>Ceci est un rappel automatique concernant votre visa étudiant.</p>
+            
+            <div class="alert-box">
+                ⚠️ Votre visa expire dans {{ days_left }} jours (le {{ expiry_date }}).
+            </div>
+            
+            <p>Nous vous recommandons vivement de commencer les démarches de renouvellement pour votre titre de séjour dès maintenant sur le portail de l'ANEF (Administration Numérique des Étrangers en France).</p>
+            
+            <a href="https://administration-etrangers-en-france.interieur.gouv.fr/" class="button">Accéder à l'ANEF</a>
+            
+            <p>Vous pouvez également suivre l'avancement de vos démarches sur votre tableau de bord Etunav.</p>
+        </div>
+        <div class="footer">
+            <p>Ceci est un message automatique, merci de ne pas y répondre.</p>
+            <p>&copy; 2026 Etunav - Votre assistant d'intégration.</p>
+        </div>
+    </div>
+</body>
+</html>

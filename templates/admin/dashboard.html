@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    .admin-container {
+        padding: 3rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .admin-header {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .admin-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+    }
+
+    .admin-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .admin-subtitle {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-primary);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .stat-card:hover::before {
+        opacity: 0.05;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .stat-icon.total {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .stat-icon.pending {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .stat-icon.verified {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .stat-icon.active {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .stat-value {
+        font-family: 'Outfit', sans-serif;
+        font-size: 3rem;
+        font-weight: 900;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .actions-section {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        color: var(--text-main);
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .logout-section {
+        margin-top: 3rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <span class="admin-badge">
+            <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i>
+            Admin
+        </span>
+        <h1 class="admin-title">Tableau de Bord</h1>
+        <p class="admin-subtitle">Gestion des inscriptions Etunav</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon total">
+                <i data-lucide="users" style="width: 30px; height: 30px; color: white;"></i>
+            </div>
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Total Utilisateurs</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon pending">
+                <i data-lucide="clock" style="width: 30px; height: 30px; color: white;"></i>
+            </div>
+            <div class="stat-value">{{ stats.pending }}</div>
+            <div class="stat-label">En Attente</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon verified">
+                <i data-lucide="shield-check" style="width: 30px; height: 30px; color: white;"></i>
+            </div>
+            <div class="stat-value">{{ stats.verified }}</div>
+            <div class="stat-label">Validés</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon active">
+                <i data-lucide="check-circle" style="width: 30px; height: 30px; color: white;"></i>
+            </div>
+            <div class="stat-value">{{ stats.active }}</div>
+            <div class="stat-label">Actifs</div>
+        </div>
+    </div>
+
+    <div class="actions-section">
+        <h2 class="section-title">Actions Rapides</h2>
+        <div class="action-buttons">
+            <a href="{{ url_for('admin_pending') }}" class="btn btn-primary"
+                style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i data-lucide="inbox" style="width: 20px; height: 20px;"></i>
+                Demandes en Attente ({{ stats.pending }})
+            </a>
+            <a href="{{ url_for('admin_demarches') }}" class="btn btn-secondary"
+                style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i data-lucide="folder-plus" style="width: 20px; height: 20px;"></i>
+                Gestion Démarches
+            </a>
+            <a href="{{ url_for('admin_chat') }}" class="btn btn-secondary"
+                style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
+                Modération Chat
+            </a>
+        </div>
+    </div>
+
+    <div class="logout-section">
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">
+            <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+            Se déconnecter
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

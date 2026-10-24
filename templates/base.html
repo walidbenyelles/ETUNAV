@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etunav - Votre compagnon vie étudiante</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Couleurs principales */
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+
+            /* Dégradés */
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+
+            /* Glassmorphism */
+            --glass: rgba(255, 255, 255, 0.9);
+            --glass-dark: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.3);
+
+            /* Texte */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+
+            /* Ombres */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+
+            /* Bordures */
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated particles background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            animation: particleMove 20s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleMove {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Header moderne */
+        header {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.2rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            animation: slideDown 0.6s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        header:hover {
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            color: var(--primary);
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-main);
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 3rem 5%;
+            text-align: center;
+            margin-top: 5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        footer strong {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Alertes */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 50%;
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(245, 87, 108, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Navigation icon hover */
+        nav a {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem 3%;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            nav {
+                gap: 1rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .container {
+                padding: 1.5rem 3%;
+            }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <a href="{{ url_for('home') }}" class="logo">
+            <i data-lucide="compass"></i>
+            ETUNAV
+        </a>
+        <nav>
+            {% if request.endpoint and request.endpoint.startswith('admin_') %}
+            <!-- PAGE ADMIN : Afficher navigation admin -->
+            {% if 'admin_id' in session %}
+            <!-- Admin CONNECTÉ sur page admin -->
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                {% if request.endpoint != 'admin_pending' %}
+                <a href="{{ url_for('admin_pending') }}" class="btn btn-secondary">
+                    <i data-lucide="inbox" style="width: 18px; height: 18px;"></i>
+                    Demandes
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-primary">
+                    <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+                    Déconnexion
+                </a>
+            </div>
+            {% else %}
+            <!-- PAS connecté en admin sur page admin -->
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">
+                    <i data-lucide="home" style="width: 18px; height: 18px;"></i>
+                    Accueil
+                </a>
+            </div>
+            {% endif %}
+            {% else %}
+            <!-- PAGE UTILISATEUR : Afficher navigation utilisateur -->
+            {% if 'user_id' in session %}
+            <!-- Utilisateur CONNECTÉ sur page utilisateur -->
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                {% if request.endpoint not in ['diagnostic', 'diagnostic_france_info'] %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                    <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
+                    Dashboard
+                </a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="btn btn-primary">
+                    <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+                    Déconnexion
+                </a>
+            </div>
+            {% else %}
+            <!-- Utilisateur NON CONNECTÉ sur page utilisateur -->
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <!-- Bouton S'inscrire : Affiché partout SAUF sur /register et /verify-email -->
+                {% if request.endpoint not in ['register', 'verify_email'] %}
+                <a href="{{ url_for('register') }}" class="btn btn-secondary">
+                    <i data-lucide="user-plus" style="width: 18px; height: 18px;"></i>
+                    S'inscrire
+                </a>
+                {% endif %}
+
+                <!-- Bouton Connexion : Affiché partout SAUF sur /login -->
+                {% if request.endpoint != 'login' %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary">
+                    <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+                    Connexion
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="{% block main_class %}container{% endblock %}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>© 2026 <strong>Etunav</strong> — La plateforme d'accompagnement vers l'autonomie étudiante.</p>
+        <div style="margin-top: 1rem; font-size: 0.8rem; opacity: 0.6;">
+            🚀 Propulsé par Flask & Lucide Icons
+        </div>
+    </footer>
+
+    <script>
+        // Initialisation des icônes Lucide
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+    .admin-container {
+        padding: 3rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .admin-header {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .grid-forms {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+        align-items: start;
+    }
+
+    .box {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    .box-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-family: inherit;
+    }
+
+    .cat-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .cat-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 1.1em;
+        color: #1e293b;
+        margin-bottom: 15px;
+    }
+
+    .step-list {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 15px;
+    }
+
+    .step-item {
+        padding: 10px;
+        background: white;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        border-left: 3px solid #667eea;
+        font-size: 0.95em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <a href="{{ url_for('admin_dashboard') }}"
+            style="color: #64748b; text-decoration: none; display:inline-block; margin-bottom:10px;"><i
+                class="ri-arrow-left-line"></i> Retour au Dashboard</a>
+        <h1 style="font-size: 2rem; color: #1e293b;">Gestion des Démarches</h1>
+        <p style="color: #64748b;">Ajoutez de nouvelles catégories et listez leurs étapes.</p>
+    </div>
+
+    <div class="grid-forms">
+        <!-- Add Category Form -->
+        <div class="box">
+            <h2 class="box-title">Nouvelle Catégorie</h2>
+            <form action="{{ url_for('admin_demarches') }}" method="POST">
+                <div class="form-group">
+                    <label>Nom de la catégorie</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Ex: Logement, Santé...">
+                </div>
+                <div class="form-group">
+                    <label>Emoji</label>
+                    <input type="text" name="emoji" class="form-control" required placeholder="Ex: 🏠">
+                </div>
+                <div class="form-group">
+                    <label>Description (optionnelle)</label>
+                    <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Public cible</label>
+                    <select name="target" class="form-control">
+                        <option value="all">Tous les étudiants</option>
+                        <option value="algerie">Algériens (en Algérie)</option>
+                        <option value="france">Algériens (en France)</option>
+                        <option value="fr">Titulaires de diplômes français</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Créer Catégorie</button>
+            </form>
+        </div>
+
+        <!-- Categories List -->
+        <div class="box">
+            <h2 class="box-title">Catégories Existantes</h2>
+            {% for cat in categories %}
+            <div class="cat-item">
+                <div class="cat-header">
+                    <span>{{ cat.emoji }}</span>
+                    <span>{{ cat.name }}</span>
+                    <span style="font-size:0.8em; color:#64748b; margin-left:auto;">Public : {{ cat.target_profile
+                        }}</span>
+                </div>
+
+                <ul class="step-list">
+                    {% for step in cat.steps %}
+                    <li class="step-item">{{ step.title }}</li>
+                    {% else %}
+                    <li style="color:#94a3b8; font-style:italic;">Aucune étape pour l'instant.</li>
+                    {% endfor %}
+                </ul>
+
+                <details style="background:white; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+                    <summary style="cursor:pointer; font-weight:600; color:#4f46e5;">+ Ajouter une étape</summary>
+                    <form action="{{ url_for('admin_add_step', cat_id=cat.id) }}" method="POST"
+                        style="margin-top:10px;">
+                        <input type="text" name="title" class="form-control" required placeholder="Titre de l'étape"
+                            style="margin-bottom:10px;">
+                        <textarea name="description" class="form-control" placeholder="Description détaillée" rows="2"
+                            style="margin-bottom:10px;"></textarea>
+                        <input type="text" name="documents" class="form-control"
+                            placeholder="Documents (séparés par des virgules)" style="margin-bottom:10px;">
+                        <button type="submit" class="btn btn-primary"
+                            style="padding:5px 15px; font-size:0.9em;">Ajouter</button>
+                    </form>
+                </details>
+            </div>
+            {% else %}
+            <p>Aucune catégorie pour le moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

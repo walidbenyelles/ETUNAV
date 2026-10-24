@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etunav - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/etunav_style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Details panel styles to augment monETUNAV/style.css */
+        .details-panel {
+            position: fixed;
+            right: -500px;
+            top: 0;
+            width: 500px;
+            max-width: 100%;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 30px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            transition: right 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow-y: auto;
+        }
+
+        .details-panel.open {
+            right: 0;
+        }
+
+        .details-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .details-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .details-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .details-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .details-description {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .details-content {
+            padding: 2rem;
+        }
+
+        .details-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .details-section-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .details-list li {
+            padding: 0.8rem 1rem;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .details-list.checklist li {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .details-list.checklist li:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            text-decoration: none;
+            color: #4f46e5;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        /* Sidebar additions */
+        .progress-box {
+            padding: 1.5rem;
+            margin: 1rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .progress-percentage {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Flash messages */
+        .flash-messages {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .flash-message {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 1rem;
+            border-left: 4px solid #4f46e5;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideIn 0.3s ease forwards;
+            pointer-events: auto;
+        }
+
+        .flash-message.success {
+            border-color: #22c55e;
+        }
+
+        .flash-message.error {
+            border-color: #ef4444;
+        }
+
+        .flash-message.warning {
+            border-color: #f59e0b;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Chatbot Widget */
+        .bot-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+        }
+
+        .bot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .bot-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .bot-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: bottom right;
+            animation: scaleIn 0.3s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .bot-panel.open {
+            display: flex;
+        }
+
+        .bot-header {
+            padding: 15px;
+            background: linear-gradient(135deg, #4f46e5 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .bot-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .bot-msg {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            line-height: 1.4;
+        }
+
+        .b-user {
+            align-self: flex-end;
+            background: #4f46e5;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .b-ai {
+            align-self: flex-start;
+            background: white;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .bot-input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .bot-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="handle" id="handle">
+    <div class="sticks">
+        <span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- FLASH MESSAGES -->
+<div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flash-message {{ category }}">
+        {% if category == 'success' %}✓{% elif category == 'error' %}⚠️{% else %}ℹ️{% endif %}
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+<aside class="panel" id="panel">
+    <div class="logoBox">
+        <h1 style="color: #4f46e5; font-size: 24px; font-weight: 900; margin-bottom: 15px;">ETUNAV</h1>
+        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">{{ user.full_name }}</p>
+    </div>
+    <div class="divider" style="height: 1px; background: #eee; margin-bottom: 15px;"></div>
+    <div class="alertRow">
+        <button class="alertBtn" id="alertBtn">
+            <i class="ri-notification-3-line" style="font-size: 24px;"></i>
+            <span class="alertDot" id="alertDot"></span>
+        </button>
+        <div class="alertText">
+            <div class="t">Notifications</div>
+            <div class="s" id="notif-count">0 nouvelle(s)</div>
+        </div>
+    </div>
+    <div class="alertNavWrap">
+        <a href="{{ url_for('alerts_page') }}" class="alertNavCard" id="alerts-nav-link">
+            <div class="alertNavIcon">
+                <i class="ri-alarm-warning-line" style="font-size: 22px;"></i>
+            </div>
+            <div class="alertNavText">
+                <div class="t">Alertes</div>
+                <div class="s">Documents à surveiller et échéances</div>
+            </div>
+            <i class="ri-arrow-right-s-line alertNavArrow"></i>
+        </a>
+    </div>
+    <div class="divider" style="height: 1px; background: #eee; margin: 15px 0;"></div>
+    <nav class="menu" id="menu">
+        <div class="item active" onclick="filterCategory('all')">Toutes les démarches</div>
+        <!-- Category buttons populated by JS -->
+    </nav>
+
+    <div class="progress-box">
+        <div style="font-weight: 700; color: #666; font-size: 0.9rem; text-transform: uppercase;">Progression</div>
+        <div class="progress-percentage" id="progress-percentage">0%</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <div style="font-size: 0.85rem; color: #666; font-weight: 600;" id="progress-text">0/0 étapes complétées
+        </div>
+    </div>
+</aside>
+
+<header>
+    <a href="/" class="logo" style="text-decoration: none;">
+        <h1 style="color: #4f46e5; font-size: 24px; font-weight: 900;">ETUNAV</h1>
+    </a>
+    <nav>
+        <a href="/chat" class="btn-icon">
+            <i class="ri-chat-3-line"></i>
+        </a>
+        <a href="#" class="btn btn-secondary">
+            Mon profil
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">
+            Déconnexion
+        </a>
+    </nav>
+</header>
+
+<div id="task-container"></div>
+
+<!-- DETAILS PANEL -->
+<div class="details-panel" id="details-panel">
+    <div class="details-header">
+        <button class="details-close" onclick="closeDetailsPanel()">
+            <i class="ri-close-line" style="font-size: 20px;"></i>
+        </button>
+        <div style="font-size: 3rem; margin-bottom: 10px;" id="dt-icon">📁</div>
+        <h2 class="details-title" id="dt-title">Titre</h2>
+        <p class="details-description" id="dt-desc">Description</p>
+    </div>
+    <div class="details-content">
+        <div class="details-section" id="dt-docs-sec">
+            <h3 class="details-section-title"><i class="ri-file-text-line"></i> Documents nécessaires</h3>
+            <ul class="details-list" id="dt-docs"></ul>
+        </div>
+        <div class="details-section" id="dt-subs-sec">
+            <h3 class="details-section-title"><i class="ri-checkbox-line"></i> Sous-étapes</h3>
+            <ul class="details-list checklist" id="dt-subs"></ul>
+        </div>
+        <div class="details-section" id="dt-res-sec">
+            <h3 class="details-section-title"><i class="ri-links-line"></i> Ressources utiles</h3>
+            <div id="dt-res"></div>
+        </div>
+    </div>
+</div>
+
+<!-- BG ANIMATION -->
+<main class="static-brain-container">
+    <div class="orbit-circle orbit-1"></div>
+    <div class="orbit-circle orbit-2"></div>
+    <div class="static-brain">
+        <div class="s-lobe s-left"></div>
+        <div class="s-lobe s-right"></div>
+    </div>
+</main>
+
+<!-- Chatbot Widget -->
+<div class="bot-widget">
+    <button class="bot-toggle" id="bot-toggle" onclick="toggleBot()">
+        <i class="ri-robot-2-fill"></i>
+    </button>
+    <div class="bot-panel" id="bot-panel">
+        <div class="bot-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <i class="ri-robot-2-fill" style="font-size:20px;"></i> Assistant Etunav
+            </div>
+            <button onclick="toggleBot()" style="background:none; border:none; color:white; cursor:pointer;"><i
+                    class="ri-close-line" style="font-size:20px;"></i></button>
+        </div>
+        <div class="bot-messages" id="bot-messages">
+            <div class="bot-msg b-ai">Bonjour {{ user.prenom }} ! Je suis l'assistant d'Etunav. Comment puis-je vous
+                aider ? (Ex: visa, CAF...)</div>
+        </div>
+        <form class="bot-input-area" onsubmit="sendBotMessage(event)">
+            <input type="text" id="bot-input" class="bot-input" placeholder="Posez une question..."
+                   autocomplete="off">
+            <button type="submit"
+                    style="background:none; border:none; color:#4f46e5; font-size:24px; cursor:pointer;"><i
+                    class="ri-send-plane-fill"></i></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Global auth info for JS
+    window.ETUNAV_USER = {
+        id: {{ user.id }},
+    situation: "{{ user.situation }}",
+        nationalite: "{{ user.nationalite }}"
+    };
+</script>
+<script src="{{ url_for('static', filename='js/etunav_script.js') }}"></script>
+<script>
+    // Auto-dismiss flashes
+    setTimeout(() => {
+        document.querySelectorAll('.flash-message').forEach(el => {
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 300);
+        });
+    }, 5000);
+
+    // Chatbot JS
+    function toggleBot() {
+        const panel = document.getElementById('bot-panel');
+        panel.classList.toggle('open');
+        if (panel.classList.contains('open')) {
+            document.getElementById('bot-input').focus();
+        }
+    }
+
+    async function sendBotMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById('bot-input');
+        const messages = document.getElementById('bot-messages');
+        const text = input.value.trim();
+        if (!text) return;
+
+        messages.innerHTML += `<div class="bot-msg b-user">${text}</div>`;
+        input.value = '';
+        messages.scrollTop = messages.scrollHeight;
+
+        try {
+            const res = await fetch('/api/chatbot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            });
+            const data = await res.json();
+
+            messages.innerHTML += `<div class="bot-msg b-ai">${data.reply}</div>`;
+            messages.scrollTop = messages.scrollHeight;
+        } catch (err) {
+            console.error(err);
+            messages.innerHTML += `<div class="bot-msg b-ai" style="color:red;">Erreur de connexion.</div>`;
+        }
+    }
+</script>
+</body>
+
+</html>
